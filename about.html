@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - AVM School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #1a365d;
+            --warm-gold: #d69e2e;
+            --pure-white: #ffffff;
+            --soft-gray: #718096;
+            --table-tennis-red: #e53e3e;
+            --achievement-silver: #a0aec0;
+            --campus-green: #38a169;
+            --innovation-blue: #3182ce;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--primary-navy);
+            overflow-x: hidden;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--warm-gold), var(--primary-navy));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-3d {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transform: translateZ(0);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--warm-gold);
+            transition: width 0.3s ease;
+            transform: translateZ(-1px);
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            transform: translateZ(10px) scale(1.05);
+        }
+        
+        .hero-about {
+            background: linear-gradient(135deg, var(--campus-green), #2f855a);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .timeline-3d {
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+        
+        .timeline-item:hover {
+            transform: translateZ(20px) rotateX(5deg);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--warm-gold), var(--campus-green));
+            transform: translateX(-50%) translateZ(-1px);
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            top: 2rem;
+            width: 20px;
+            height: 20px;
+            background: var(--campus-green);
+            border: 4px solid white;
+            border-radius: 50%;
+            transform: translateX(-50%) translateZ(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 0 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transform-style: preserve-3d;
+            transition: all 0.4s ease;
+        }
+        
+        .timeline-content:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .value-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .value-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .leader-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .leader-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px) rotateX(10deg);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .floating-element {
+            animation: float-element 8s ease-in-out infinite;
+        }
+        
+        @keyframes float-element {
+            0%, 100% { transform: translateY(0px) rotateY(0deg); }
+            50% { transform: translateY(-25px) rotateY(180deg); }
+        }
+        
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .stagger-delay-1 { transition-delay: 0.1s; }
+        .stagger-delay-2 { transition-delay: 0.2s; }
+        .stagger-delay-3 { transition-delay: 0.3s; }
+        .stagger-delay-4 { transition-delay: 0.4s; }
+        .stagger-delay-5 { transition-delay: 0.5s; }
+        .stagger-delay-6 { transition-delay: 0.6s; }
+        
+        .stats-counter {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--warm-gold);
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .founder-tribute {
+            background: linear-gradient(135deg, rgba(26, 54, 93, 0.9), rgba(214, 158, 46, 0.9));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mission-vision {
+            background: linear-gradient(135deg, rgba(56, 161, 105, 0.9), rgba(49, 130, 206, 0.9));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .campus-evolution {
+            background: linear-gradient(135deg, rgba(229, 62, 62, 0.9), rgba(214, 158, 46, 0.9));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gold-shimmer {
+            background: linear-gradient(45deg, var(--warm-gold), #f6e05e, var(--warm-gold));
+            background-size: 200% 200%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% 0; }
+            50% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Navigation -->
+    <nav class="nav-3d">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="logo-3d">
+                    <img src="resources/new-logo-60years.png" alt="AVM School" class="h-12">
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Home</a>
+                    <a href="about.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium active">About</a>
+                    <a href="achievements.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Achievements</a>
+                    <a href="academics.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Academics</a>
+                    <a href="#contact" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Contact</a>
+                </div>
+                <button class="md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 3D Hero Section -->
+    <section class="hero-about pt-32 pb-20 text-white relative overflow-hidden">
+        <div class="particle-container" id="hero-particles"></div>
+        <div class="max-w-7xl mx-auto px-6 text-center relative z-10">
+            <div class="reveal">
+                <h1 class="font-display text-6xl lg:text-8xl font-bold mb-6">
+                    <span class="gold-shimmer bg-clip-text text-transparent">About AVM</span>
+                </h1>
+                <p class="text-2xl lg:text-3xl mb-8 opacity-90">
+                    58 Years of Educational Excellence
+                </p>
+                <p class="text-xl max-w-3xl mx-auto opacity-80">
+                    From humble beginnings to international recognition, discover the story of Nepal's premier educational institution.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Floating Elements -->
+        <div class="absolute top-20 left-10 floating-element z-5">
+            <div class="text-6xl opacity-30">🎓</div>
+        </div>
+        <div class="absolute top-40 right-20 floating-element z-5" style="animation-delay: -2s;">
+            <div class="text-4xl opacity-20">📚</div>
+        </div>
+        <div class="absolute bottom-20 left-1/4 floating-element z-5" style="animation-delay: -1s;">
+            <div class="text-5xl opacity-25">🏛️</div>
+        </div>
+    </section>
+    
+    <!-- School Statistics -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Our Legacy in Numbers</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Five decades of excellence reflected in our achievements and growth.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="reveal stagger-delay-1 text-center">
+                    <div class="stats-counter mb-4" data-target="60">0</div>
+                    <h3 class="font-semibold text-lg mb-2">Years of Excellence</h3>
+                    <p class="text-gray-600">Since 1965</p>
+                </div>
+                
+                <div class="reveal stagger-delay-2 text-center">
+                    <div class="stats-counter mb-4" data-target="12000">0</div>
+                    <h3 class="font-semibold text-lg mb-2">Students Educated</h3>
+                    <p class="text-gray-600">Alumni Network</p>
+                </div>
+                
+                <div class="reveal stagger-delay-3 text-center">
+                    <div class="stats-counter mb-4" data-target="150">0</div>
+                    <h3 class="font-semibold text-lg mb-2">Teaching Staff</h3>
+                    <p class="text-gray-600">Qualified Educators</p>
+                </div>
+                
+                <div class="reveal stagger-delay-4 text-center">
+                    <div class="stats-counter mb-4" data-target="25">0</div>
+                    <h3 class="font-semibold text-lg mb-2">Awards & Recognition</h3>
+                    <p class="text-gray-600">National & International</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Founder Tribute Section -->
+    <section class="founder-tribute py-20 text-white relative overflow-hidden">
+        <div class="particle-container" id="founder-particles"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="reveal">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8">
+                        <div class="text-center mb-8">
+                            <div class="w-32 h-32 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mx-auto mb-6 flex items-center justify-center">
+                                <span class="text-6xl">👨‍🏫</span>
+                            </div>
+                            <h2 class="font-display text-4xl font-bold mb-4">Late Satya Narayan Bahadur Shrestha</h2>
+                            <p class="text-xl opacity-90">Founder & Visionary</p>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="flex items-center">
+                                <div class="bg-white/20 p-3 rounded-full mr-4">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H1a2 2 0 00-2 2v10a2 2 0 002 2h18a2 2 0 002-2V6a2 2 0 00-2-2h-3V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Established</h3>
+                                    <p class="opacity-80">2022 BS (1965 AD)</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="bg-white/20 p-3 rounded-full mr-4">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Vision</h3>
+                                    <p class="opacity-80">"Be Good, Do Good"</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="bg-white/20 p-3 rounded-full mr-4">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Mission</h3>
+                                    <p class="opacity-80">Quality Education for All</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2">
+                    <div class="space-y-8">
+                        <h2 class="font-display text-4xl font-bold mb-6">The Visionary Behind AVM</h2>
+                        <p class="text-lg leading-relaxed opacity-90">
+                            Late Satya Narayan Bahadur Shrestha founded Adarsha Vidya Mandir with a revolutionary vision: to make quality education accessible to all sections of society, regardless of their economic background.
+                        </p>
+                        <p class="text-lg leading-relaxed opacity-90">
+                            His philosophy of "Be Good, Do Good" became the cornerstone of AVM's educational approach, emphasizing not just academic excellence but also character development and social responsibility.
+                        </p>
+                        <p class="text-lg leading-relaxed opacity-90">
+                            Under his leadership, AVM grew from a small institution to one of Nepal's most respected educational establishments, setting new standards in holistic education and student development.
+                        </p>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-6">
+                            <blockquote class="text-xl italic text-center">
+                                "Education is not just about acquiring knowledge; it's about becoming a better human being and contributing positively to society."
+                            </blockquote>
+                            <p class="text-center mt-4 opacity-80">- Late Satya Narayan Bahadur Shrestha</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Mission & Vision Section -->
+    <section class="mission-vision py-20 text-white relative overflow-hidden">
+        <div class="particle-container" id="mission-particles"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gold-shimmer bg-clip-text text-transparent">Mission & Vision</span>
+                </h2>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                    Our guiding principles that shape every aspect of education at AVM School.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="reveal stagger-delay-1">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">🎯</div>
+                            <h3 class="font-display text-3xl font-bold mb-4">Our Mission</h3>
+                        </div>
+                        <div class="space-y-4 text-lg leading-relaxed">
+                            <p>
+                                To provide holistic education that nurtures intellectual, physical, emotional, and social development of every student.
+                            </p>
+                            <p>
+                                To create an inclusive learning environment where every child can achieve their full potential regardless of their background.
+                            </p>
+                            <p>
+                                To instill values of integrity, compassion, and social responsibility while preparing students for global challenges.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">👁️</div>
+                            <h3 class="font-display text-3xl font-bold mb-4">Our Vision</h3>
+                        </div>
+                        <div class="space-y-4 text-lg leading-relaxed">
+                            <p>
+                                To be a center of excellence in education that produces globally competent citizens with strong moral values.
+                            </p>
+                            <p>
+                                To lead educational innovation in Nepal while preserving our cultural heritage and values.
+                            </p>
+                            <p>
+                                To create a community of lifelong learners who contribute positively to society and the world.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Core Values Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Core Values</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    The fundamental principles that guide our educational philosophy and daily operations.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="reveal stagger-delay-1 value-card rounded-2xl p-8 text-center">
+                    <div class="text-5xl mb-6">🌟</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Excellence</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Striving for the highest standards in academic achievement, sports performance, and character development.
+                    </p>
+                </div>
+                
+                <div class="reveal stagger-delay-2 value-card rounded-2xl p-8 text-center">
+                    <div class="text-5xl mb-6">🤝</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Integrity</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Upholding honesty, transparency, and ethical behavior in all aspects of school life and personal conduct.
+                    </p>
+                </div>
+                
+                <div class="reveal stagger-delay-3 value-card rounded-2xl p-8 text-center">
+                    <div class="text-5xl mb-6">❤️</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Compassion</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Fostering empathy, kindness, and social responsibility towards others and the community.
+                    </p>
+                </div>
+                
+                <div class="reveal stagger-delay-4 value-card rounded-2xl p-8 text-center">
+                    <div class="text-5xl mb-6">🌍</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Global Citizenship</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Preparing students to be responsible global citizens while respecting local culture and traditions.
+                    </p>
+                </div>
+                
+                <div class="reveal stagger-delay-5 value-card rounded-2xl p-8 text-center">
+                    <div class="text-5xl mb-6">💡</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Innovation</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Encouraging creative thinking, problem-solving, and adaptation to new challenges and opportunities.
+                    </p>
+                </div>
+                
+                <div class="reveal stagger-delay-6 value-card rounded-2xl p-8 text-center">
+                    <div class="text-5xl mb-6">🤲</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Service</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        Instilling a sense of responsibility to contribute positively to society and help those in need.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Leadership Team Section -->
+    <section class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Leadership Team</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Meet the dedicated leaders who guide AVM School towards continued excellence.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="reveal stagger-delay-1 leader-card">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-3xl text-white">👨‍💼</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold">Dr. Ram Sharma</h3>
+                        <p class="text-gray-600">Principal</p>
+                    </div>
+                    <p class="text-gray-700 text-center mb-4">
+                        Leading AVM School with over 20 years of educational leadership experience and commitment to academic excellence.
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">PhD Education</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">20+ Years</span>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2 leader-card">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-teal-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-3xl text-white">👩‍💼</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold">Ms. Sita Thapa</h3>
+                        <p class="text-gray-600">Vice Principal</p>
+                    </div>
+                    <p class="text-gray-700 text-center mb-4">
+                        Overseeing academic operations and student welfare with dedication to holistic development and innovation.
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">MEd</span>
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">15+ Years</span>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-3 leader-card">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-3xl text-white">👨‍⚖️</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold">Mr. Rajesh Koirala</h3>
+                        <p class="text-gray-600">Administrative Director</p>
+                    </div>
+                    <p class="text-gray-700 text-center mb-4">
+                        Managing school operations and strategic planning with expertise in educational administration and development.
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">MBA</span>
+                        <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">18+ Years</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Campus Evolution Section -->
+    <section class="campus-evolution py-20 text-white relative overflow-hidden">
+        <div class="particle-container" id="evolution-particles"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gold-shimmer bg-clip-text text-transparent">Campus Evolution</span>
+                </h2>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                    Witness the transformation of our campus over six decades of growth and development.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="reveal stagger-delay-1">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8">
+                        <h3 class="font-display text-3xl font-bold mb-6">1965 - The Beginning</h3>
+                        <div class="space-y-4 text-lg">
+                            <p>Started with just 5 classrooms and 50 students in a modest building at Manbhawan.</p>
+                            <p>Basic facilities but strong commitment to quality education and character development.</p>
+                            <p>Emphasis on traditional values combined with modern teaching methods.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8">
+                        <h3 class="font-display text-3xl font-bold mb-6">2025 - Present Day</h3>
+                        <div class="space-y-4 text-lg">
+                            <p>Modern campus with 50+ classrooms, advanced laboratories, and world-class sports facilities.</p>
+                            <p>Smart classrooms, digital learning platforms, and comprehensive technology integration.</p>
+                            <p>International standard table tennis arena and multi-purpose sports complex.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-16 reveal stagger-delay-3">
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center">
+                    <h3 class="font-display text-3xl font-bold mb-6">Continuous Growth</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div>
+                            <div class="text-4xl mb-4">🏗️</div>
+                            <h4 class="font-semibold text-xl mb-2">Infrastructure</h4>
+                            <p class="opacity-90">Modern buildings and facilities</p>
+                        </div>
+                        <div>
+                            <div class="text-4xl mb-4">💻</div>
+                            <h4 class="font-semibold text-xl mb-2">Technology</h4>
+                            <p class="opacity-90">Digital learning integration</p>
+                        </div>
+                        <div>
+                            <div class="text-4xl mb-4">🏆</div>
+                            <h4 class="font-semibold text-xl mb-2">Achievements</h4>
+                            <p class="opacity-90">National & international recognition</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section id="contact" class="py-20 bg-gradient-to-br from-blue-600 to-purple-700 text-white relative overflow-hidden">
+        <div class="particle-container" id="cta-particles"></div>
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <div class="reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">Join Our Legacy</h2>
+                <p class="text-xl opacity-90 mb-12">
+                    Become part of a 58-year tradition of excellence. Your journey to success starts at AVM School.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <button class="bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold text-lg hover:bg-yellow-400 transition-colors">
+                        Apply for Admission
+                    </button>
+                    <button class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
+                        Schedule Campus Visit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="reveal">
+                <div class="mb-6">
+                    <img src="resources/new-logo-60years.png" alt="AVM School" class="h-16 mx-auto mb-4">
+                </div>
+                <p class="text-gray-400 mb-4">
+                    Adarsha Vidya Mandir (AVM) School<br>
+                    Manbhawan, Lalitpur, Nepal
+                </p>
+                <p class="text-gray-500 text-sm font-mono">
+                    © 2025 AVM School. 60 Years of Excellence in Education.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize 3D effects
+            initialize3DEffects();
+            initializeParticleSystems();
+            initializeScrollEffects();
+            initializeCounters();
+            initializeNavigation();
+            initializeTimeline();
+            initializeButtonHandlers();
+        });
+        
+        function initialize3DEffects() {
+            // 3D card hover effects
+            const cards3D = document.querySelectorAll('.value-card, .leader-card, .timeline-content');
+            
+            cards3D.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    anime({
+                        targets: this,
+                        rotateX: 5,
+                        translateY: -10,
+                        scale: 1.02,
+                        duration: 600,
+                        easing: 'easeOutCubic'
+                    });
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    anime({
+                        targets: this,
+                        rotateX: 0,
+                        translateY: 0,
+                        scale: 1,
+                        duration: 600,
+                        easing: 'easeOutCubic'
+                    });
+                });
+            });
+        }
+        
+        function initializeParticleSystems() {
+            // Founder particles
+            const founderParticles = new p5((p) => {
+                let particles = [];
+                
+                p.setup = () => {
+                    const canvas = p.createCanvas(p.windowWidth, 600);
+                    canvas.parent('founder-particles');
+                    
+                    for (let i = 0; i < 50; i++) {
+                        particles.push({
+                            x: p.random(p.width),
+                            y: p.random(p.height),
+                            vx: p.random(-0.5, 0.5),
+                            vy: p.random(-0.5, 0.5),
+                            size: p.random(2, 6),
+                            opacity: p.random(0.1, 0.3)
+                        });
+                    }
+                };
+                
+                p.draw = () => {
+                    p.clear();
+                    
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        
+                        if (particle.x < 0) particle.x = p.width;
+                        if (particle.x > p.width) particle.x = 0;
+                        if (particle.y < 0) particle.y = p.height;
+                        if (particle.y > p.height) particle.y = 0;
+                        
+                        p.fill(255, 255, 255, particle.opacity * 255);
+                        p.noStroke();
+                        p.ellipse(particle.x, particle.y, particle.size);
+                    });
+                };
+                
+                p.windowResized = () => {
+                    p.resizeCanvas(p.windowWidth, 600);
+                };
+            });
+            
+            // Mission particles
+            const missionParticles = new p5((p) => {
+                let particles = [];
+                
+                p.setup = () => {
+                    const canvas = p.createCanvas(p.windowWidth, 600);
+                    canvas.parent('mission-particles');
+                    
+                    for (let i = 0; i < 40; i++) {
+                        particles.push({
+                            x: p.random(p.width),
+                            y: p.random(p.height),
+                            vx: p.random(-0.8, 0.8),
+                            vy: p.random(-0.8, 0.8),
+                            size: p.random(3, 8),
+                            opacity: p.random(0.2, 0.5)
+                        });
+                    }
+                };
+                
+                p.draw = () => {
+                    p.clear();
+                    
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        
+                        if (particle.x < 0 || particle.x > p.width) particle.vx *= -1;
+                        if (particle.y < 0 || particle.y > p.height) particle.vy *= -1;
+                        
+                        p.fill(255, 255, 255, particle.opacity * 255);
+                        p.noStroke();
+                        p.ellipse(particle.x, particle.y, particle.size);
+                    });
+                };
+                
+                p.windowResized = () => {
+                    p.resizeCanvas(p.windowWidth, 600);
+                };
+            });
+            
+            // Evolution particles
+            const evolutionParticles = new p5((p) => {
+                let particles = [];
+                
+                p.setup = () => {
+                    const canvas = p.createCanvas(p.windowWidth, 600);
+                    canvas.parent('evolution-particles');
+                    
+                    for (let i = 0; i < 60; i++) {
+                        particles.push({
+                            x: p.random(p.width),
+                            y: p.random(p.height),
+                            vx: p.random(-1, 1),
+                            vy: p.random(-1, 1),
+                            size: p.random(2, 5),
+                            opacity: p.random(0.1, 0.4)
+                        });
+                    }
+                };
+                
+                p.draw = () => {
+                    p.clear();
+                    
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        
+                        if (particle.x < 0) particle.x = p.width;
+                        if (particle.x > p.width) particle.x = 0;
+                        if (particle.y < 0) particle.y = p.height;
+                        if (particle.y > p.height) particle.y = 0;
+                        
+                        p.fill(255, 255, 255, particle.opacity * 255);
+                        p.noStroke();
+                        p.ellipse(particle.x, particle.y, particle.size);
+                    });
+                };
+                
+                p.windowResized = () => {
+                    p.resizeCanvas(p.windowWidth, 600);
+                };
+            });
+        }
+        
+        function initializeScrollEffects() {
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.3,
+                rootMargin: '0px 0px -100px 0px'
+            });
+
+            revealElements.forEach(element => {
+                revealObserver.observe(element);
+            });
+        }
+        
+        function initializeCounters() {
+            const counters = document.querySelectorAll('.stats-counter');
+            
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counter = entry.target;
+                        const target = parseInt(counter.dataset.target);
+                        const duration = 2000;
+                        const increment = target / (duration / 16);
+                        let current = 0;
+                        
+                        const updateCounter = () => {
+                            current += increment;
+                            if (current < target) {
+                                counter.textContent = Math.floor(current).toLocaleString();
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                counter.textContent = target.toLocaleString();
+                            }
+                        };
+                        
+                        updateCounter();
+                        counterObserver.unobserve(counter);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            counters.forEach(counter => {
+                counterObserver.observe(counter);
+            });
+        }
+        
+        function initializeNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+        }
+        
+        function initializeTimeline() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            
+            timelineItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    anime({
+                        targets: this,
+                        translateZ: 20,
+                        rotateX: 5,
+                        duration: 500,
+                        easing: 'easeOutCubic'
+                    });
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    anime({
+                        targets: this,
+                        translateZ: 0,
+                        rotateX: 0,
+                        duration: 500,
+                        easing: 'easeOutCubic'
+                    });
+                });
+            });
+        }
+        
+        function initializeButtonHandlers() {
+            const buttons = document.querySelectorAll('button');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const text = this.textContent.trim();
+                    
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = event.clientX - rect.left - size / 2;
+                    const y = event.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                    
+                    // Show notification
+                    showNotification('Feature coming soon!');
+                });
+            });
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-6 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            anime({
+                targets: notification,
+                translateX: 0,
+                duration: 300,
+                easing: 'easeOutCubic',
+                complete: () => {
+                    setTimeout(() => {
+                        anime({
+                            targets: notification,
+                            translateX: '100%',
+                            duration: 300,
+                            easing: 'easeInCubic',
+                            complete: () => {
+                                notification.remove();
+                            }
+                        });
+                    }, 3000);
+                }
+            });
+        }
+        
+        // CSS for ripple effect
+        const style = document.createElement('style');
+        style.textContent = `
+            .ripple {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(0);
+                animation: ripple-animation 0.6s linear;
+                pointer-events: none;
+            }
+            
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

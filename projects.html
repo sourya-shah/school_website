@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Chhatra Bikram Shah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a1a;
+            --secondary: #6b6b6b;
+            --accent: #7c9885;
+            --background: #fafafa;
+            --text: #0d0d0d;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .filter-btn {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .project-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .project-card.hidden {
+            display: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: 20px;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .stagger-delay-1 { transition-delay: 0.1s; }
+        .stagger-delay-2 { transition-delay: 0.2s; }
+        .stagger-delay-3 { transition-delay: 0.3s; }
+        .stagger-delay-4 { transition-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-sm z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="font-display text-2xl font-bold text-gray-900">
+                    <a href="index.html">CBS</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Home</a>
+                    <a href="about.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">About</a>
+                    <a href="projects.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium active">Projects</a>
+                    <a href="contact.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Contact</a>
+                </div>
+                <button class="md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="reveal">
+                <h1 class="font-display text-5xl lg:text-6xl font-bold mb-6">
+                    <span class="gradient-text">My Projects</span>
+                </h1>
+                <p class="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+                    A showcase of my recent work across various technologies and domains. Each project represents a unique challenge and learning opportunity.
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Filter Section -->
+    <section class="pb-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="reveal stagger-delay-1">
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button class="filter-btn active px-6 py-3 rounded-full font-medium" data-filter="all">All Projects</button>
+                    <button class="filter-btn px-6 py-3 rounded-full font-medium" data-filter="ai">AI & ML</button>
+                    <button class="filter-btn px-6 py-3 rounded-full font-medium" data-filter="web">Web Development</button>
+                    <button class="filter-btn px-6 py-3 rounded-full font-medium" data-filter="mobile">Mobile Apps</button>
+                    <button class="filter-btn px-6 py-3 rounded-full font-medium" data-filter="devops">DevOps</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Projects Grid -->
+    <section class="pb-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+                <!-- Project 1: Routine Management System -->
+                <div class="project-card reveal stagger-delay-1 bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer" 
+                     data-category="web" 
+                     data-project="routine-management">
+                    <img src="https://kimi-web-img.moonshot.cn/img/i.pinimg.com/6fde631c85cc03c5acb0c3b44e27b08b94fa4ac1.jpg" 
+                         alt="Routine Management System" 
+                         class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-display text-2xl font-bold mb-3">Routine Management System</h3>
+                        <p class="text-gray-600 mb-4">
+                            Comprehensive scheduling system for Department of Electronics and Computer Engineering at Pulchowk Campus, designed to manage teacher and class routines efficiently.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">React</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Node.js</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">MongoDB</span>
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Express</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">Web Development</span>
+                            <span class="text-gray-900 font-medium">View Details →</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 2: Video Event Describer -->
+                <div class="project-card reveal stagger-delay-2 bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer" 
+                     data-category="ai" 
+                     data-project="video-describer">
+                    <img src="https://kimi-web-img.moonshot.cn/img/www.xenonstack.com/e8283756bb2601134a57af34af5d56548db956c6.png" 
+                         alt="Video Event Describer" 
+                         class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-display text-2xl font-bold mb-3">Video Event Describer</h3>
+                        <p class="text-gray-600 mb-4">
+                            AI-powered model that understands video events and generates comprehensive descriptions. Built using advanced computer vision and natural language processing techniques.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Python</span>
+                            <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">TensorFlow</span>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">OpenCV</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">NLP</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">AI & ML</span>
+                            <span class="text-gray-900 font-medium">View Details →</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 3: Kubernetes Architecture -->
+                <div class="project-card reveal stagger-delay-3 bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer" 
+                     data-category="devops" 
+                     data-project="kubernetes-arch">
+                    <img src="https://kimi-web-img.moonshot.cn/img/www.gstatic.com/eedca142872b3fc22849e9f89055ef99526a385c.jpg" 
+                         alt="Kubernetes Architecture" 
+                         class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-display text-2xl font-bold mb-3">Scalable Microservices</h3>
+                        <p class="text-gray-600 mb-4">
+                            Kubernetes-based microservices architecture for scalable and maintainable applications. Features automated deployment, monitoring, and scaling capabilities.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Kubernetes</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Docker</span>
+                            <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">AWS</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Helm</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">DevOps</span>
+                            <span class="text-gray-900 font-medium">View Details →</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 4: E-commerce Platform -->
+                <div class="project-card reveal stagger-delay-4 bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer" 
+                     data-category="web" 
+                     data-project="ecommerce">
+                    <img src="https://kimi-web-img.moonshot.cn/img/onextstudio.com/9b2000f242d904864b3b153cdca1948c4d6af4a6.jpg" 
+                         alt="E-commerce Platform" 
+                         class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-display text-2xl font-bold mb-3">E-commerce Platform</h3>
+                        <p class="text-gray-600 mb-4">
+                            Full-featured e-commerce website offering access to latest gadgets and accessories. Includes payment processing, inventory management, and user authentication.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">MERN Stack</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Stripe</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Redis</span>
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">JWT</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">Web Development</span>
+                            <span class="text-gray-900 font-medium">View Details →</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 5: Mobile App Project -->
+                <div class="project-card reveal stagger-delay-1 bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer" 
+                     data-category="mobile" 
+                     data-project="mobile-app">
+                    <img src="https://kimi-web-img.moonshot.cn/img/cieden.com/8fe9c76dfcfb6e89ea51e3421bdaa18e3b59c184.png" 
+                         alt="Mobile App" 
+                         class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-display text-2xl font-bold mb-3">Task Management App</h3>
+                        <p class="text-gray-600 mb-4">
+                            Cross-platform mobile application for task management and productivity tracking. Built with Flutter for optimal performance on both iOS and Android.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Flutter</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Dart</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Firebase</span>
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">SQLite</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">Mobile Apps</span>
+                            <span class="text-gray-900 font-medium">View Details →</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 6: Testing Framework -->
+                <div class="project-card reveal stagger-delay-2 bg-white rounded-2xl overflow-hidden shadow-lg cursor-pointer" 
+                     data-category="devops" 
+                     data-project="testing-framework">
+                    <img src="https://kimi-web-img.moonshot.cn/img/dt-cdn.net/5d8ec6b277614ac05cd1623fa4aea68c8ecf0917.png" 
+                         alt="Testing Framework" 
+                         class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-display text-2xl font-bold mb-3">Automated Testing Framework</h3>
+                        <p class="text-gray-600 mb-4">
+                            Comprehensive testing framework for web applications with support for UI testing, API testing, and performance monitoring. Integrated with CI/CD pipelines.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">Selenium</span>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Jest</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Jenkins</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Docker</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">DevOps</span>
+                            <span class="text-gray-900 font-medium">View Details →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Project Modal -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="modal-title" class="font-display text-3xl font-bold"></h2>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="modal-content">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CTA Section -->
+    <section class="py-20 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="reveal">
+                <h2 class="font-display text-4xl font-bold mb-6">Like What You See?</h2>
+                <p class="text-xl text-gray-300 mb-8">
+                    I'm always open to discussing new projects and opportunities. Let's talk about how we can bring your ideas to life.
+                </p>
+                <a href="contact.html" class="inline-block bg-white text-gray-900 px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                    Start a Project
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="reveal">
+                <p class="text-gray-600 font-mono">
+                    © 2025 Chhatra Bikram Shah. Crafted with passion and precision.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reveal animations
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.3,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            revealElements.forEach(element => {
+                revealObserver.observe(element);
+            });
+            
+            // Filter functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter projects
+                    projectCards.forEach(card => {
+                        if (filter === 'all' || card.dataset.category === filter) {
+                            card.classList.remove('hidden');
+                            anime({
+                                targets: card,
+                                opacity: [0, 1],
+                                translateY: [30, 0],
+                                duration: 600,
+                                easing: 'easeOutCubic',
+                                delay: Math.random() * 200
+                            });
+                        } else {
+                            anime({
+                                targets: card,
+                                opacity: 0,
+                                translateY: 30,
+                                duration: 300,
+                                easing: 'easeInCubic',
+                                complete: function() {
+                                    card.classList.add('hidden');
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+            
+            // Project modal functionality
+            const modal = document.getElementById('project-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+            const closeModal = document.getElementById('close-modal');
+            
+            const projectData = {
+                'routine-management': {
+                    title: 'Routine Management System',
+                    content: `
+                        <img src="https://kimi-web-img.moonshot.cn/img/i.pinimg.com/6fde631c85cc03c5acb0c3b44e27b08b94fa4ac1.jpg" alt="Routine Management System" class="w-full h-64 object-cover rounded-lg mb-6">
+                        <div class="prose max-w-none">
+                            <p class="text-gray-600 mb-6">
+                                The Routine Management System was developed for the Department of Electronics and Computer Engineering at Pulchowk Campus to streamline the complex process of managing teacher schedules and class routines.
+                            </p>
+                            <h3 class="text-xl font-bold mb-4">Key Features</h3>
+                            <ul class="text-gray-600 mb-6 space-y-2">
+                                <li>• Automated schedule generation based on constraints</li>
+                                <li>• Teacher availability and preference management</li>
+                                <li>• Conflict detection and resolution</li>
+                                <li>• Multi-department coordination</li>
+                                <li>• Export capabilities for various formats</li>
+                            </ul>
+                            <h3 class="text-xl font-bold mb-4">Technical Implementation</h3>
+                            <p class="text-gray-600 mb-6">
+                                Built using the MERN stack with a focus on user experience and system reliability. The application features a responsive design, real-time updates, and comprehensive error handling.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">React</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Node.js</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">MongoDB</span>
+                                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Express</span>
+                                <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">JWT</span>
+                            </div>
+                        </div>
+                    `
+                },
+                'video-describer': {
+                    title: 'Video Event Describer',
+                    content: `
+                        <img src="https://kimi-web-img.moonshot.cn/img/www.xenonstack.com/e8283756bb2601134a57af34af5d56548db956c6.png" alt="Video Event Describer" class="w-full h-64 object-cover rounded-lg mb-6">
+                        <div class="prose max-w-none">
+                            <p class="text-gray-600 mb-6">
+                                An AI-powered system that analyzes video content and generates comprehensive descriptions of events, actions, and scenes. This project combines computer vision with natural language processing.
+                            </p>
+                            <h3 class="text-xl font-bold mb-4">Key Features</h3>
+                            <ul class="text-gray-600 mb-6 space-y-2">
+                                <li>• Real-time video analysis and processing</li>
+                                <li>• Object detection and tracking</li>
+                                <li>• Action recognition and classification</li>
+                                <li>• Natural language description generation</li>
+                                <li>• Support for multiple video formats</li>
+                            </ul>
+                            <h3 class="text-xl font-bold mb-4">Technical Implementation</h3>
+                            <p class="text-gray-600 mb-6">
+                                Built using Python with TensorFlow for deep learning models, OpenCV for video processing, and various NLP libraries for description generation.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Python</span>
+                                <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">TensorFlow</span>
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">OpenCV</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">NLP</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">CNN</span>
+                            </div>
+                        </div>
+                    `
+                },
+                'kubernetes-arch': {
+                    title: 'Scalable Microservices Architecture',
+                    content: `
+                        <img src="https://kimi-web-img.moonshot.cn/img/www.gstatic.com/eedca142872b3fc22849e9f89055ef99526a385c.jpg" alt="Kubernetes Architecture" class="w-full h-64 object-cover rounded-lg mb-6">
+                        <div class="prose max-w-none">
+                            <p class="text-gray-600 mb-6">
+                                A comprehensive microservices architecture built on Kubernetes, designed for scalability, maintainability, and high availability in cloud environments.
+                            </p>
+                            <h3 class="text-xl font-bold mb-4">Key Features</h3>
+                            <ul class="text-gray-600 mb-6 space-y-2">
+                                <li>• Container orchestration with Kubernetes</li>
+                                <li>• Auto-scaling based on load metrics</li>
+                                <li>• Service mesh implementation</li>
+                                <li>• Distributed logging and monitoring</li>
+                                <li>• Blue-green deployment strategies</li>
+                            </ul>
+                            <h3 class="text-xl font-bold mb-4">Technical Implementation</h3>
+                            <p class="text-gray-600 mb-6">
+                                Utilizes Docker for containerization, Kubernetes for orchestration, Helm for package management, and various AWS services for cloud infrastructure.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Kubernetes</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Docker</span>
+                                <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">AWS</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Helm</span>
+                                <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">Prometheus</span>
+                            </div>
+                        </div>
+                    `
+                },
+                'ecommerce': {
+                    title: 'E-commerce Platform',
+                    content: `
+                        <img src="https://kimi-web-img.moonshot.cn/img/onextstudio.com/9b2000f242d904864b3b153cdca1948c4d6af4a6.jpg" alt="E-commerce Platform" class="w-full h-64 object-cover rounded-lg mb-6">
+                        <div class="prose max-w-none">
+                            <p class="text-gray-600 mb-6">
+                                A full-featured e-commerce platform offering access to the latest gadgets and accessories. Built with modern web technologies and integrated payment processing.
+                            </p>
+                            <h3 class="text-xl font-bold mb-4">Key Features</h3>
+                            <ul class="text-gray-600 mb-6 space-y-2">
+                                <li>• User authentication and authorization</li>
+                                <li>• Product catalog with search and filtering</li>
+                                <li>• Shopping cart and wishlist functionality</li>
+                                <li>• Secure payment processing with Stripe</li>
+                                <li>• Order tracking and management</li>
+                                <li>• Admin dashboard for inventory management</li>
+                            </ul>
+                            <h3 class="text-xl font-bold mb-4">Technical Implementation</h3>
+                            <p class="text-gray-600 mb-6">
+                                Full-stack application using the MERN stack with Redis for caching, JWT for authentication, and integration with third-party payment services.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">MERN Stack</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Stripe</span>
+                                <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Redis</span>
+                                <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">JWT</span>
+                                <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">AWS S3</span>
+                            </div>
+                        </div>
+                    `
+                }
+            };
+            
+            // Open modal
+            projectCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const projectId = this.dataset.project;
+                    const project = projectData[projectId];
+                    
+                    if (project) {
+                        modalTitle.textContent = project.title;
+                        modalContent.innerHTML = project.content;
+                        modal.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+            
+            // Close modal
+            closeModal.addEventListener('click', function() {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Close modal on background click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // Close modal on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

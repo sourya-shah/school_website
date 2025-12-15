@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academics - AVM School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #1a365d;
+            --warm-gold: #d69e2e;
+            --pure-white: #ffffff;
+            --soft-gray: #718096;
+            --table-tennis-red: #e53e3e;
+            --achievement-silver: #a0aec0;
+            --campus-green: #38a169;
+            --innovation-blue: #3182ce;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--primary-navy);
+            overflow-x: hidden;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--warm-gold), var(--primary-navy));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-3d {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transform: translateZ(0);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--warm-gold);
+            transition: width 0.3s ease;
+            transform: translateZ(-1px);
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            transform: translateZ(10px) scale(1.05);
+        }
+        
+        .hero-academics {
+            background: linear-gradient(135deg, var(--innovation-blue), #2b6cb0);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .program-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .program-card:hover {
+            transform: translateY(-15px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+        
+        .virtual-tour {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .virtual-tour::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .virtual-tour:hover::before {
+            background: linear-gradient(45deg, rgba(0,0,0,0.5), rgba(0,0,0,0.2));
+        }
+        
+        .virtual-tour-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+        
+        .facility-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .facility-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .subject-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px) rotateX(10deg);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .stagger-delay-1 { transition-delay: 0.1s; }
+        .stagger-delay-2 { transition-delay: 0.2s; }
+        .stagger-delay-3 { transition-delay: 0.3s; }
+        .stagger-delay-4 { transition-delay: 0.4s; }
+        .stagger-delay-5 { transition-delay: 0.5s; }
+        .stagger-delay-6 { transition-delay: 0.6s; }
+        
+        .floating-book {
+            animation: float-book 6s ease-in-out infinite;
+        }
+        
+        @keyframes float-book {
+            0%, 100% { transform: translateY(0px) rotateY(0deg); }
+            50% { transform: translateY(-20px) rotateY(180deg); }
+        }
+        
+        .stats-counter {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--warm-gold);
+        }
+        
+        .grade-badge {
+            background: linear-gradient(135deg, var(--warm-gold), #f6e05e);
+            color: var(--primary-navy);
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: inline-block;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .grade-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .lab-equipment {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 15px;
+            margin: 0.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .lab-equipment:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .teacher-profile {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+        }
+        
+        .teacher-profile:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Navigation -->
+    <nav class="nav-3d">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="logo-3d">
+                    <img src="resources/new-logo-60years.png" alt="AVM School" class="h-12">
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Home</a>
+                    <a href="about.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">About</a>
+                    <a href="achievements.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Achievements</a>
+                    <a href="academics.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium active">Academics</a>
+                    <a href="#contact" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Contact</a>
+                </div>
+                <button class="md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 3D Hero Section -->
+    <section class="hero-academics pt-32 pb-20 text-white relative overflow-hidden">
+        <div class="particle-container" id="hero-particles"></div>
+        <div class="max-w-7xl mx-auto px-6 text-center relative z-10">
+            <div class="reveal">
+                <h1 class="font-display text-6xl lg:text-8xl font-bold mb-6">
+                    <span class="gold-shimmer bg-clip-text text-transparent">Academic Excellence</span>
+                </h1>
+                <p class="text-2xl lg:text-3xl mb-8 opacity-90">
+                    Comprehensive Education for Holistic Development
+                </p>
+                <p class="text-xl max-w-3xl mx-auto opacity-80">
+                    From nursery to high school, we provide world-class education that prepares students for global challenges while honoring Nepali values.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Floating Books -->
+        <div class="absolute top-20 left-10 floating-book z-5">
+            <div class="text-6xl opacity-30">📚</div>
+        </div>
+        <div class="absolute top-40 right-20 floating-book z-5" style="animation-delay: -2s;">
+            <div class="text-4xl opacity-20">🧪</div>
+        </div>
+        <div class="absolute bottom-20 left-1/4 floating-book z-5" style="animation-delay: -1s;">
+            <div class="text-5xl opacity-25">🔬</div>
+        </div>
+    </section>
+    
+    <!-- Academic Statistics -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Our Academic Performance</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Numbers that reflect our commitment to educational excellence.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="reveal stagger-delay-1 text-center">
+                    <div class="stats-counter mb-4" data-target="95">0</div>
+                    <h3 class="font-semibold text-lg mb-2">Board Exam Pass Rate</h3>
+                    <p class="text-gray-600">Consistent Excellence</p>
+                </div>
+                
+                <div class="reveal stagger-delay-2 text-center">
+                    <div class="stats-counter mb-4" data-target="85">0</div>
+                    <h3 class="font-semibold text-lg mb-2">First Division</h3>
+                    <p class="text-gray-600">Percentage of Students</p>
+                </div>
+                
+                <div class="reveal stagger-delay-3 text-center">
+                    <div class="stats-counter mb-4" data-target="40">0</div>
+                    <h3 class="font-semibold text-lg mb-2">Distinction</h3>
+                    <p class="text-gray-600">Academic Excellence</p>
+                </div>
+                
+                <div class="reveal stagger-delay-4 text-center">
+                    <div class="stats-counter mb-4" data-target="12">0</div>
+                    <h3 class="font-semibold text-lg mb-2">National Top 10</h3>
+                    <p class="text-gray-600">Board Rankings</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Programs Section -->
+    <section class="py-20 section-3d">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Our Programs</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Comprehensive educational programs designed for every stage of learning.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="reveal stagger-delay-1 program-card rounded-2xl overflow-hidden">
+                    <div class="bg-gradient-to-br from-pink-400 to-red-500 p-8 text-white">
+                        <div class="text-4xl mb-4">🎓</div>
+                        <h3 class="font-display text-2xl font-bold">Nursery - Grade 5</h3>
+                        <p class="opacity-90">Foundation Years</p>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-6">
+                            Strong foundation with play-based learning, developing curiosity and creativity in young minds.
+                        </p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-pink-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Play-based learning</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-pink-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Creative development</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-pink-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Motor skills development</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2 program-card rounded-2xl overflow-hidden">
+                    <div class="bg-gradient-to-br from-blue-400 to-blue-600 p-8 text-white">
+                        <div class="text-4xl mb-4">📚</div>
+                        <h3 class="font-display text-2xl font-bold">Grade 6 - 8</h3>
+                        <p class="opacity-90">Middle School</p>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-6">
+                            Comprehensive middle school program focusing on academic excellence and character development.
+                        </p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Core subjects mastery</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Critical thinking</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Leadership skills</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-3 program-card rounded-2xl overflow-hidden">
+                    <div class="bg-gradient-to-br from-green-400 to-green-600 p-8 text-white">
+                        <div class="text-4xl mb-4">🎒</div>
+                        <h3 class="font-display text-2xl font-bold">Grade 9 - 10</h3>
+                        <p class="opacity-90">Secondary School</p>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-6">
+                            Advanced secondary education preparing students for higher studies and career choices.
+                        </p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Specialized subjects</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Career guidance</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Board preparation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-4 program-card rounded-2xl overflow-hidden">
+                    <div class="bg-gradient-to-br from-purple-400 to-purple-600 p-8 text-white">
+                        <div class="text-4xl mb-4">🎓</div>
+                        <h3 class="font-display text-2xl font-bold">Grade 11 - 12</h3>
+                        <p class="opacity-90">Higher Secondary</p>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-6">
+                            Specialized higher secondary programs with multiple streams for university preparation.
+                        </p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-purple-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Science, Management, Humanities</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-purple-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">University preparation</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-purple-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Professional guidance</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-5 program-card rounded-2xl overflow-hidden">
+                    <div class="bg-gradient-to-br from-yellow-400 to-orange-500 p-8 text-white">
+                        <div class="text-4xl mb-4">🏆</div>
+                        <h3 class="font-display text-2xl font-bold">Sports Academy</h3>
+                        <p class="opacity-90">All Grades</p>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-6">
+                            Comprehensive sports program with focus on table tennis and other athletic disciplines.
+                        </p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-yellow-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Table tennis specialization</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-yellow-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Professional coaching</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-yellow-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Fitness & nutrition</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-6 program-card rounded-2xl overflow-hidden">
+                    <div class="bg-gradient-to-br from-teal-400 to-cyan-500 p-8 text-white">
+                        <div class="text-4xl mb-4">🎨</div>
+                        <h3 class="font-display text-2xl font-bold">Arts & Culture</h3>
+                        <p class="opacity-90">All Grades</p>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-6">
+                            Creative arts program including music, dance, drama, and visual arts for holistic development.
+                        </p>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-teal-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Music & dance</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-teal-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Drama & theater</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-teal-400 rounded-full mr-3"></div>
+                                <span class="text-gray-600">Visual arts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Virtual Tour Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Explore Our Facilities</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Take a virtual tour of our world-class educational facilities.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="reveal stagger-delay-1">
+                    <div class="virtual-tour rounded-2xl overflow-hidden relative h-96">
+                        <img src="resources/classroom-3d.jpg" alt="Smart Classroom" class="w-full h-full object-cover">
+                        <div class="virtual-tour-content">
+                            <div class="bg-white/20 backdrop-blur-md rounded-full p-4 mb-4">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold mb-2">Smart Classrooms</h3>
+                            <p class="opacity-90">Interactive learning environments</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2">
+                    <div class="virtual-tour rounded-2xl overflow-hidden relative h-96">
+                        <img src="resources/campus-building.jpg" alt="Science Laboratory" class="w-full h-full object-cover">
+                        <div class="virtual-tour-content">
+                            <div class="bg-white/20 backdrop-blur-md rounded-full p-4 mb-4">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold mb-2">Science Laboratories</h3>
+                            <p class="opacity-90">Modern equipment and safety standards</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Subjects & Curriculum -->
+    <section class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Comprehensive Curriculum</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    A balanced curriculum that combines academics, sports, and arts for holistic development.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="reveal stagger-delay-1 subject-card rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-4">📐</div>
+                    <h3 class="font-display text-xl font-bold mb-3">Mathematics</h3>
+                    <p class="text-gray-600 text-sm">Advanced mathematical concepts and problem-solving skills.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-2 subject-card rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-4">🧪</div>
+                    <h3 class="font-display text-xl font-bold mb-3">Science</h3>
+                    <p class="text-gray-600 text-sm">Physics, Chemistry, Biology with hands-on experiments.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-3 subject-card rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-4">🌍</div>
+                    <h3 class="font-display text-xl font-bold mb-3">Social Studies</h3>
+                    <p class="text-gray-600 text-sm">History, Geography, Civics, and Economics.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-4 subject-card rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-4">💻</div>
+                    <h3 class="font-display text-xl font-bold mb-3">Computer Science</h3>
+                    <p class="text-gray-600 text-sm">Programming, digital literacy, and technology skills.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-1 subject-card rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-4">📚</div>
+                    <h3 class="font-display text-xl font-bold mb-3">Languages</h3>
+                    <p class="text-gray-600 text-sm">English, Nepali, and optional foreign languages.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-2 subject-card rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-4">🎨</div>
+                    <h3 class="font-display text-xl font-bold mb-3">Arts & Music</h3>
+                    <p class="text-gray-600 text-sm">Creative expression through various art forms.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-3 subject-card rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-4">🏃</div>
+                    <h3 class="font-display text-xl font-bold mb-3">Physical Education</h3>
+                    <p class="text-gray-600 text-sm">Fitness, sports, and healthy lifestyle education.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-4 subject-card rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-4">🧘</div>
+                    <h3 class="font-display text-xl font-bold mb-3">Moral Education</h3>
+                    <p class="text-gray-600 text-sm">Ethics, values, and character development.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Laboratory Facilities -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Laboratory Facilities</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    State-of-the-art laboratories for hands-on learning and scientific exploration.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="reveal stagger-delay-1">
+                    <div class="facility-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">🔬</div>
+                            <h3 class="font-display text-2xl font-bold">Physics Lab</h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">⚡</div>
+                                <h4 class="font-semibold">Electrical</h4>
+                            </div>
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">🌡️</div>
+                                <h4 class="font-semibold">Thermal</h4>
+                            </div>
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">🔭</div>
+                                <h4 class="font-semibold">Optical</h4>
+                            </div>
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">📡</div>
+                                <h4 class="font-semibold">Modern</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2">
+                    <div class="facility-card bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">🧪</div>
+                            <h3 class="font-display text-2xl font-bold">Chemistry Lab</h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">⚗️</div>
+                                <h4 class="font-semibold">Organic</h4>
+                            </div>
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">🔬</div>
+                                <h4 class="font-semibold">Inorganic</h4>
+                            </div>
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">⚖️</div>
+                                <h4 class="font-semibold">Analytical</h4>
+                            </div>
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">🌡️</div>
+                                <h4 class="font-semibold">Physical</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-3">
+                    <div class="facility-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">🧬</div>
+                            <h3 class="font-display text-2xl font-bold">Biology Lab</h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">🔬</div>
+                                <h4 class="font-semibold">Microscopy</h4>
+                            </div>
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">🌱</div>
+                                <h4 class="font-semibold">Botany</h4>
+                            </div>
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">🦠</div>
+                                <h4 class="font-semibold">Zoology</h4>
+                            </div>
+                            <div class="lab-equipment">
+                                <div class="text-2xl mb-2">🧬</div>
+                                <h4 class="font-semibold">Genetics</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Faculty Section -->
+    <section class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Our Expert Faculty</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Highly qualified and experienced educators dedicated to student success.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="reveal stagger-delay-1 teacher-profile">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-3xl text-white">👨‍🏫</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold">Dr. Ram Sharma</h3>
+                        <p class="text-gray-600">Principal & Mathematics</p>
+                    </div>
+                    <p class="text-gray-700 text-center mb-4">
+                        PhD in Mathematics with 25 years of teaching experience. Specialized in advanced mathematical concepts.
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">PhD</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">25 Years</span>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2 teacher-profile">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-teal-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-3xl text-white">👩‍🔬</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold">Dr. Sita Thapa</h3>
+                        <p class="text-gray-600">Science Department Head</p>
+                    </div>
+                    <p class="text-gray-700 text-center mb-4">
+                        PhD in Physics with expertise in experimental physics and science education research.
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">PhD</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Research</span>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-3 teacher-profile">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-3xl text-white">👨‍💻</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold">Mr. Raj Kumar</h3>
+                        <p class="text-gray-600">Computer Science</p>
+                    </div>
+                    <p class="text-gray-700 text-center mb-4">
+                        Master's in Computer Science with industry experience in software development and programming.
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">MSc</span>
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Industry</span>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-4 teacher-profile">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-3xl text-white">👩‍🎨</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold">Ms. Priya Singh</h3>
+                        <p class="text-gray-600">Arts & Culture</p>
+                    </div>
+                    <p class="text-gray-700 text-center mb-4">
+                        Master's in Fine Arts with specialization in contemporary art and cultural studies.
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">MFA</span>
+                        <span class="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm">Arts</span>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-5 teacher-profile">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-red-500 to-pink-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-3xl text-white">🏓</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold">Mr. Purushottam Vajracharya</h3>
+                        <p class="text-gray-600">Table Tennis Coach</p>
+                    </div>
+                    <p class="text-gray-700 text-center mb-4">
+                        National level table tennis coach with 15 years of experience training international champions.
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">National</span>
+                        <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">15 Years</span>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-6 teacher-profile">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-3xl text-white">📚</span>
+                        </div>
+                        <h3 class="font-display text-xl font-bold">Ms. Anita Gurung</h3>
+                        <p class="text-gray-600">English Literature</p>
+                    </div>
+                    <p class="text-gray-700 text-center mb-4">
+                        Master's in English Literature with expertise in creative writing and language teaching methodologies.
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">MA</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Literature</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Grade Structure -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Grade Structure</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Organized grade structure from nursery to higher secondary education.
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-4">
+                <div class="reveal stagger-delay-1">
+                    <div class="grade-badge">Nursery</div>
+                    <div class="grade-badge">LKG</div>
+                    <div class="grade-badge">UKG</div>
+                </div>
+                <div class="reveal stagger-delay-2">
+                    <div class="grade-badge">Grade 1</div>
+                    <div class="grade-badge">Grade 2</div>
+                    <div class="grade-badge">Grade 3</div>
+                    <div class="grade-badge">Grade 4</div>
+                    <div class="grade-badge">Grade 5</div>
+                </div>
+                <div class="reveal stagger-delay-3">
+                    <div class="grade-badge">Grade 6</div>
+                    <div class="grade-badge">Grade 7</div>
+                    <div class="grade-badge">Grade 8</div>
+                </div>
+                <div class="reveal stagger-delay-4">
+                    <div class="grade-badge">Grade 9</div>
+                    <div class="grade-badge">Grade 10</div>
+                </div>
+                <div class="reveal stagger-delay-5">
+                    <div class="grade-badge">Grade 11</div>
+                    <div class="grade-badge">Grade 12</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section id="contact" class="py-20 bg-gradient-to-br from-blue-600 to-purple-700 text-white relative overflow-hidden">
+        <div class="particle-container" id="cta-particles"></div>
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <div class="reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">Start Your Journey</h2>
+                <p class="text-xl opacity-90 mb-12">
+                    Join AVM School and experience world-class education that prepares you for global success.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <button class="bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold text-lg hover:bg-yellow-400 transition-colors">
+                        Apply for Admission
+                    </button>
+                    <button class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
+                        Schedule Campus Visit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="reveal">
+                <div class="mb-6">
+                    <img src="resources/new-logo-60years.png" alt="AVM School" class="h-16 mx-auto mb-4">
+                </div>
+                <p class="text-gray-400 mb-4">
+                    Adarsha Vidya Mandir (AVM) School<br>
+                    Manbhawan, Lalitpur, Nepal
+                </p>
+                <p class="text-gray-500 text-sm font-mono">
+                    © 2025 AVM School. 60 Years of Excellence in Education.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize 3D effects
+            initialize3DEffects();
+            initializeParticleSystems();
+            initializeScrollEffects();
+            initializeCounters();
+            initializeNavigation();
+            initializeVirtualTours();
+            initializeButtonHandlers();
+        });
+        
+        function initialize3DEffects() {
+            // 3D card hover effects
+            const cards3D = document.querySelectorAll('.program-card, .facility-card, .teacher-profile, .subject-card');
+            
+            cards3D.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    anime({
+                        targets: this,
+                        rotateX: 5,
+                        translateY: -10,
+                        scale: 1.02,
+                        duration: 600,
+                        easing: 'easeOutCubic'
+                    });
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    anime({
+                        targets: this,
+                        rotateX: 0,
+                        translateY: 0,
+                        scale: 1,
+                        duration: 600,
+                        easing: 'easeOutCubic'
+                    });
+                });
+            });
+        }
+        
+        function initializeParticleSystems() {
+            // Hero particles
+            const heroParticles = new p5((p) => {
+                let particles = [];
+                
+                p.setup = () => {
+                    const canvas = p.createCanvas(p.windowWidth, 500);
+                    canvas.parent('hero-particles');
+                    
+                    for (let i = 0; i < 60; i++) {
+                        particles.push({
+                            x: p.random(p.width),
+                            y: p.random(p.height),
+                            vx: p.random(-0.5, 0.5),
+                            vy: p.random(-0.5, 0.5),
+                            size: p.random(2, 6),
+                            opacity: p.random(0.1, 0.3)
+                        });
+                    }
+                };
+                
+                p.draw = () => {
+                    p.clear();
+                    
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        
+                        if (particle.x < 0) particle.x = p.width;
+                        if (particle.x > p.width) particle.x = 0;
+                        if (particle.y < 0) particle.y = p.height;
+                        if (particle.y > p.height) particle.y = 0;
+                        
+                        p.fill(255, 255, 255, particle.opacity * 255);
+                        p.noStroke();
+                        p.ellipse(particle.x, particle.y, particle.size);
+                    });
+                };
+                
+                p.windowResized = () => {
+                    p.resizeCanvas(p.windowWidth, 500);
+                };
+            });
+            
+            // CTA particles
+            const ctaParticles = new p5((p) => {
+                let particles = [];
+                
+                p.setup = () => {
+                    const canvas = p.createCanvas(p.windowWidth, 300);
+                    canvas.parent('cta-particles');
+                    
+                    for (let i = 0; i < 40; i++) {
+                        particles.push({
+                            x: p.random(p.width),
+                            y: p.random(p.height),
+                            vx: p.random(-0.8, 0.8),
+                            vy: p.random(-0.8, 0.8),
+                            size: p.random(3, 8),
+                            opacity: p.random(0.1, 0.4)
+                        });
+                    }
+                };
+                
+                p.draw = () => {
+                    p.clear();
+                    
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        
+                        if (particle.x < 0) particle.x = p.width;
+                        if (particle.x > p.width) particle.x = 0;
+                        if (particle.y < 0) particle.y = p.height;
+                        if (particle.y > p.height) particle.y = 0;
+                        
+                        p.fill(255, 255, 255, particle.opacity * 255);
+                        p.noStroke();
+                        p.ellipse(particle.x, particle.y, particle.size);
+                    });
+                };
+                
+                p.windowResized = () => {
+                    p.resizeCanvas(p.windowWidth, 300);
+                };
+            });
+        }
+        
+        function initializeScrollEffects() {
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.3,
+                rootMargin: '0px 0px -100px 0px'
+            });
+
+            revealElements.forEach(element => {
+                revealObserver.observe(element);
+            });
+        }
+        
+        function initializeCounters() {
+            const counters = document.querySelectorAll('.stats-counter');
+            
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counter = entry.target;
+                        const target = parseInt(counter.dataset.target);
+                        const duration = 2000;
+                        const increment = target / (duration / 16);
+                        let current = 0;
+                        
+                        const updateCounter = () => {
+                            current += increment;
+                            if (current < target) {
+                                counter.textContent = Math.floor(current).toLocaleString();
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                counter.textContent = target.toLocaleString();
+                            }
+                        };
+                        
+                        updateCounter();
+                        counterObserver.unobserve(counter);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            counters.forEach(counter => {
+                counterObserver.observe(counter);
+            });
+        }
+        
+        function initializeNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+        }
+        
+        function initializeVirtualTours() {
+            const tours = document.querySelectorAll('.virtual-tour');
+            
+            tours.forEach(tour => {
+                tour.addEventListener('click', function() {
+                    anime({
+                        targets: this,
+                        scale: [1, 1.05, 1],
+                        duration: 600,
+                        easing: 'easeOutCubic'
+                    });
+                    
+                    showNotification('Virtual tour launching soon!');
+                });
+            });
+        }
+        
+        function initializeButtonHandlers() {
+            const buttons = document.querySelectorAll('button');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const text = this.textContent.trim();
+                    
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = event.clientX - rect.left - size / 2;
+                    const y = event.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                    
+                    // Show notification
+                    showNotification('Feature coming soon!');
+                });
+            });
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-6 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            anime({
+                targets: notification,
+                translateX: 0,
+                duration: 300,
+                easing: 'easeOutCubic',
+                complete: () => {
+                    setTimeout(() => {
+                        anime({
+                            targets: notification,
+                            translateX: '100%',
+                            duration: 300,
+                            easing: 'easeInCubic',
+                            complete: () => {
+                                notification.remove();
+                            }
+                        });
+                    }, 3000);
+                }
+            });
+        }
+        
+        // CSS for ripple effect
+        const style = document.createElement('style');
+        style.textContent = `
+            .ripple {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(0);
+                animation: ripple-animation 0.6s linear;
+                pointer-events: none;
+            }
+            
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

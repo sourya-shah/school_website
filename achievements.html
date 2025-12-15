@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements - AVM School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #1a365d;
+            --warm-gold: #d69e2e;
+            --pure-white: #ffffff;
+            --soft-gray: #718096;
+            --table-tennis-red: #e53e3e;
+            --achievement-silver: #a0aec0;
+            --campus-green: #38a169;
+            --innovation-blue: #3182ce;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--primary-navy);
+            overflow-x: hidden;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--warm-gold), var(--primary-navy));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-3d {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transform: translateZ(0);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--warm-gold);
+            transition: width 0.3s ease;
+            transform: translateZ(-1px);
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            transform: translateZ(10px) scale(1.05);
+        }
+        
+        .hero-achievements {
+            background: linear-gradient(135deg, var(--table-tennis-red), #c53030);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .timeline-3d {
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 4rem;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+        
+        .timeline-item:hover {
+            transform: translateZ(20px) rotateX(5deg);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--warm-gold), var(--achievement-silver));
+            transform: translateX(-50%) translateZ(-1px);
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            top: 2rem;
+            width: 20px;
+            height: 20px;
+            background: var(--warm-gold);
+            border: 4px solid white;
+            border-radius: 50%;
+            transform: translateX(-50%) translateZ(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 0 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transform-style: preserve-3d;
+            transition: all 0.4s ease;
+        }
+        
+        .timeline-content:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .trophy-3d {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .trophy-3d:hover {
+            transform: rotateY(360deg) scale(1.1);
+        }
+        
+        .medal-3d {
+            position: relative;
+            display: inline-block;
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .medal-3d:hover {
+            transform: translateY(-10px) rotateZ(10deg);
+        }
+        
+        .medal-3d::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, var(--warm-gold), #f6e05e, var(--warm-gold));
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .medal-3d:hover::before {
+            opacity: 0.3;
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px) rotateX(10deg);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .floating-trophy {
+            animation: float-trophy 4s ease-in-out infinite;
+        }
+        
+        @keyframes float-trophy {
+            0%, 100% { transform: translateY(0px) rotateY(0deg); }
+            50% { transform: translateY(-15px) rotateY(180deg); }
+        }
+        
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s ease;
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .stagger-delay-1 { transition-delay: 0.1s; }
+        .stagger-delay-2 { transition-delay: 0.2s; }
+        .stagger-delay-3 { transition-delay: 0.3s; }
+        .stagger-delay-4 { transition-delay: 0.4s; }
+        
+        .gold-shimmer {
+            background: linear-gradient(45deg, var(--warm-gold), #f6e05e, var(--warm-gold));
+            background-size: 200% 200%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% 0; }
+            50% { background-position: -200% 0; }
+        }
+        
+        .stats-3d {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--warm-gold);
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transform-style: preserve-3d;
+        }
+        
+        .championship-bg {
+            background: linear-gradient(135deg, var(--table-tennis-red), #c53030);
+        }
+        
+        .academic-bg {
+            background: linear-gradient(135deg, var(--innovation-blue), #2b6cb0);
+        }
+        
+        .cultural-bg {
+            background: linear-gradient(135deg, var(--campus-green), #2f855a);
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Navigation -->
+    <nav class="nav-3d">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="logo-3d">
+                    <img src="resources/new-logo-60years.png" alt="AVM School" class="h-12">
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Home</a>
+                    <a href="about.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">About</a>
+                    <a href="achievements.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium active">Achievements</a>
+                    <a href="academics.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Academics</a>
+                    <a href="#contact" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Contact</a>
+                </div>
+                <button class="md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 3D Hero Section -->
+    <section class="hero-achievements pt-32 pb-20 text-white relative overflow-hidden">
+        <div class="particle-container" id="hero-particles"></div>
+        <div class="max-w-7xl mx-auto px-6 text-center relative z-10">
+            <div class="reveal">
+                <h1 class="font-display text-6xl lg:text-8xl font-bold mb-6">
+                    <span class="gold-shimmer bg-clip-text text-transparent">Our Achievements</span>
+                </h1>
+                <p class="text-2xl lg:text-3xl mb-8 opacity-90">
+                    Celebrating Excellence in Sports, Academics & Culture
+                </p>
+                <p class="text-xl max-w-3xl mx-auto opacity-80">
+                    From international table tennis championships to academic accolades, AVM School continues to set new benchmarks in education and sports excellence.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Floating Trophies -->
+        <div class="absolute top-20 left-10 floating-trophy z-5">
+            <div class="text-6xl opacity-30">🏆</div>
+        </div>
+        <div class="absolute top-40 right-20 floating-trophy z-5" style="animation-delay: -2s;">
+            <div class="text-4xl opacity-20">🥇</div>
+        </div>
+        <div class="absolute bottom-20 left-1/4 floating-trophy z-5" style="animation-delay: -1s;">
+            <div class="text-5xl opacity-25">🏅</div>
+        </div>
+    </section>
+    
+    <!-- Achievement Statistics -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">By the Numbers</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Our achievements speak volumes about our commitment to excellence.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="reveal stagger-delay-1 text-center">
+                    <div class="stats-3d mb-4" data-target="15">0</div>
+                    <h3 class="font-semibold text-lg mb-2">International Medals</h3>
+                    <p class="text-gray-600">Table Tennis Championships</p>
+                </div>
+                
+                <div class="reveal stagger-delay-2 text-center">
+                    <div class="stats-3d mb-4" data-target="25">0</div>
+                    <h3 class="font-semibold text-lg mb-2">National Championships</h3>
+                    <p class="text-gray-600">Various Sports & Competitions</p>
+                </div>
+                
+                <div class="reveal stagger-delay-3 text-center">
+                    <div class="stats-3d mb-4" data-target="95">0</div>
+                    <h3 class="font-semibold text-lg mb-2">Academic Pass Rate</h3>
+                    <p class="text-gray-600">Percentage in Board Exams</p>
+                </div>
+                
+                <div class="reveal stagger-delay-4 text-center">
+                    <div class="stats-3d mb-4" data-target="12000">0</div>
+                    <h3 class="font-semibold text-lg mb-2">Students Educated</h3>
+                    <p class="text-gray-600">Since Establishment</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 3D Timeline Section -->
+    <section class="py-20 section-3d">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Journey to Excellence</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    A timeline of our major achievements and milestones.
+                </p>
+            </div>
+            
+            <div class="timeline-3d">
+                <!-- 2022 - Foundation Year -->
+                <div class="timeline-item reveal stagger-delay-1">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-4">
+                            <div class="medal-3d bg-yellow-500 text-white p-3 rounded-full mr-4">
+                                <span class="text-2xl">🏛️</span>
+                            </div>
+                            <div>
+                                <h3 class="font-display text-2xl font-bold">1965 - Foundation</h3>
+                                <p class="text-gray-600">AVM School Established</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4">
+                            Founded by Late Satya Narayan Bahadur Shrestha with a vision to provide quality education accessible to all.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Foundation</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Vision</span>
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Legacy</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 2020 - Table Tennis Program -->
+                <div class="timeline-item reveal stagger-delay-2">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-4">
+                            <div class="medal-3d bg-red-500 text-white p-3 rounded-full mr-4">
+                                <span class="text-2xl">🏓</span>
+                            </div>
+                            <div>
+                                <h3 class="font-display text-2xl font-bold">2020 - Table Tennis Excellence</h3>
+                                <p class="text-gray-600">Sports Program Launch</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4">
+                            Launched comprehensive table tennis program with professional coaching and world-class facilities.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">Table Tennis</span>
+                            <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">Sports</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Coaching</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 2022 - Global Designathon -->
+                <div class="timeline-item reveal stagger-delay-3">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-4">
+                            <div class="medal-3d bg-blue-500 text-white p-3 rounded-full mr-4">
+                                <span class="text-2xl">🎨</span>
+                            </div>
+                            <div>
+                                <h3 class="font-display text-2xl font-bold">2022 - Global Designathon</h3>
+                                <p class="text-gray-600">International Recognition</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4">
+                            Students won 'Best Concept' category award at Global Designathon 2022, showcasing innovative thinking.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Design</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Innovation</span>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Global</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 2023 - Ivana's International Debut -->
+                <div class="timeline-item reveal stagger-delay-4">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-4">
+                            <div class="medal-3d bg-yellow-500 text-white p-3 rounded-full mr-4">
+                                <span class="text-2xl">🥇</span>
+                            </div>
+                            <div>
+                                <h3 class="font-display text-2xl font-bold">2023 - International Debut</h3>
+                                <p class="text-gray-600">Ivana's Success</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4">
+                            Ivana makes international debut at age 13, becoming the youngest national team member in Nepali table tennis history.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Record</span>
+                            <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">International</span>
+                            <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">Achievement</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 2024 - South Asian Medals -->
+                <div class="timeline-item reveal stagger-delay-1">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-4">
+                            <div class="medal-3d bg-silver-400 text-white p-3 rounded-full mr-4">
+                                <span class="text-2xl">🥈</span>
+                            </div>
+                            <div>
+                                <h3 class="font-display text-2xl font-bold">2024 - South Asian Medals</h3>
+                                <p class="text-gray-600">Historic Achievement</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4">
+                            Ivana and Bianca Rai win Nepal's first-ever South Asian Junior Table Tennis medals with two silver medals.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">Silver Medal</span>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">South Asian</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Historic</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Championship Gallery -->
+    <section class="py-20 championship-bg text-white relative overflow-hidden">
+        <div class="particle-container" id="gallery-particles"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gold-shimmer bg-clip-text text-transparent">Championship Gallery</span>
+                </h2>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                    Relive the moments of glory and celebrate our champions.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="reveal stagger-delay-1 achievement-card rounded-2xl overflow-hidden">
+                    <img src="resources/achievement-trophy.jpg" alt="Team Championship" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-display text-2xl font-bold mb-3">Ivana's Victory</h3>
+                        <p class="text-gray-700 mb-4">
+                            Historic win at the South Asian Junior Table Tennis Championship in Maldives.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">2024</span>
+                            <div class="flex space-x-2">
+                                <span class="medal-3d text-2xl">🥈</span>
+                                <span class="medal-3d text-2xl">🥈</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2 achievement-card rounded-2xl overflow-hidden">
+                    <img src="resources/achievement-trophy.jpg" alt="Team Championship" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="font-display text-2xl font-bold mb-3">Team Championship</h3>
+                        <p class="text-gray-700 mb-4">
+                            AVM School team wins national table tennis championship for the third consecutive year.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">2024</span>
+                            <div class="flex space-x-2">
+                                <span class="medal-3d text-2xl">🏆</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-3 achievement-card rounded-2xl overflow-hidden">
+                    <div class="w-full h-64 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <div class="text-white text-center">
+                            <div class="text-6xl mb-4">🎨</div>
+                            <h3 class="text-2xl font-bold">Design Excellence</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-display text-2xl font-bold mb-3">Global Designathon</h3>
+                        <p class="text-gray-700 mb-4">
+                            Students win 'Best Concept' award at Global Designathon 2022.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500">2022</span>
+                            <div class="flex space-x-2">
+                                <span class="medal-3d text-2xl">🏆</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Academic Achievements -->
+    <section class="py-20 academic-bg text-white relative overflow-hidden">
+        <div class="particle-container" id="academic-particles"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gold-shimmer bg-clip-text text-transparent">Academic Excellence</span>
+                </h2>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                    Our students consistently achieve outstanding results in academics and creative pursuits.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="reveal stagger-delay-1">
+                    <div class="achievement-card rounded-2xl p-8">
+                        <h3 class="font-display text-3xl font-bold mb-6">Board Exam Results</h3>
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">Pass Rate</span>
+                                <span class="stats-3d text-2xl">95%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">First Division</span>
+                                <span class="stats-3d text-2xl">85%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">Distinction</span>
+                                <span class="stats-3d text-2xl">40%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">Top 10 National</span>
+                                <span class="stats-3d text-2xl">12</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2">
+                    <div class="achievement-card rounded-2xl p-8">
+                        <h3 class="font-display text-3xl font-bold mb-6">Creative Achievements</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-center">
+                                <div class="bg-blue-500 text-white p-3 rounded-full mr-4">
+                                    <span class="text-xl">🎨</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Art Competitions</h4>
+                                    <p class="text-gray-600">15 National Awards</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="bg-green-500 text-white p-3 rounded-full mr-4">
+                                    <span class="text-xl">🎭</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Cultural Programs</h4>
+                                    <p class="text-gray-600">8 International Participations</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="bg-purple-500 text-white p-3 rounded-full mr-4">
+                                    <span class="text-xl">🎵</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Music & Dance</h4>
+                                    <p class="text-gray-600">25 Regional Championships</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="bg-yellow-500 text-white p-3 rounded-full mr-4">
+                                    <span class="text-xl">📚</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold">Literary Competitions</h4>
+                                    <p class="text-gray-600">30+ Awards</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-br from-purple-600 to-blue-700 text-white relative overflow-hidden">
+        <div class="particle-container" id="cta-particles"></div>
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <div class="reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">Join Our Legacy</h2>
+                <p class="text-xl opacity-90 mb-12">
+                    Be part of a school where excellence is not just a goal, but a way of life.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <button class="bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold text-lg hover:bg-yellow-400 transition-colors">
+                        Apply for Admission
+                    </button>
+                    <button class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
+                        Schedule Campus Visit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="reveal">
+                <div class="mb-6">
+                    <img src="resources/new-logo-60years.png" alt="AVM School" class="h-16 mx-auto mb-4">
+                </div>
+                <p class="text-gray-400 mb-4">
+                    Adarsha Vidya Mandir (AVM) School<br>
+                    Manbhawan, Lalitpur, Nepal
+                </p>
+                <p class="text-gray-500 text-sm font-mono">
+                    © 2025 AVM School. 60 Years of Excellence in Education.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize 3D effects
+            initialize3DEffects();
+            initializeParticleSystems();
+            initializeScrollEffects();
+            initializeCounters();
+            initializeNavigation();
+            initializeTrophyAnimations();
+            initializeButtonHandlers();
+        });
+        
+        function initialize3DEffects() {
+            // 3D card hover effects
+            const cards3D = document.querySelectorAll('.timeline-content, .achievement-card');
+            
+            cards3D.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    anime({
+                        targets: this,
+                        rotateX: 5,
+                        translateY: -10,
+                        scale: 1.02,
+                        duration: 600,
+                        easing: 'easeOutCubic'
+                    });
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    anime({
+                        targets: this,
+                        rotateX: 0,
+                        translateY: 0,
+                        scale: 1,
+                        duration: 600,
+                        easing: 'easeOutCubic'
+                    });
+                });
+            });
+        }
+        
+        function initializeParticleSystems() {
+            // Hero particles
+            const heroParticles = new p5((p) => {
+                let particles = [];
+                
+                p.setup = () => {
+                    const canvas = p.createCanvas(p.windowWidth, 500);
+                    canvas.parent('hero-particles');
+                    
+                    for (let i = 0; i < 60; i++) {
+                        particles.push({
+                            x: p.random(p.width),
+                            y: p.random(p.height),
+                            vx: p.random(-0.5, 0.5),
+                            vy: p.random(-0.5, 0.5),
+                            size: p.random(2, 6),
+                            opacity: p.random(0.1, 0.3)
+                        });
+                    }
+                };
+                
+                p.draw = () => {
+                    p.clear();
+                    
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        
+                        if (particle.x < 0) particle.x = p.width;
+                        if (particle.x > p.width) particle.x = 0;
+                        if (particle.y < 0) particle.y = p.height;
+                        if (particle.y > p.height) particle.y = 0;
+                        
+                        p.fill(255, 255, 255, particle.opacity * 255);
+                        p.noStroke();
+                        p.ellipse(particle.x, particle.y, particle.size);
+                    });
+                };
+                
+                p.windowResized = () => {
+                    p.resizeCanvas(p.windowWidth, 500);
+                };
+            });
+            
+            // Gallery particles
+            const galleryParticles = new p5((p) => {
+                let particles = [];
+                
+                p.setup = () => {
+                    const canvas = p.createCanvas(p.windowWidth, 600);
+                    canvas.parent('gallery-particles');
+                    
+                    for (let i = 0; i < 40; i++) {
+                        particles.push({
+                            x: p.random(p.width),
+                            y: p.random(p.height),
+                            vx: p.random(-0.8, 0.8),
+                            vy: p.random(-0.8, 0.8),
+                            size: p.random(3, 8),
+                            opacity: p.random(0.2, 0.5)
+                        });
+                    }
+                };
+                
+                p.draw = () => {
+                    p.clear();
+                    
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        
+                        if (particle.x < 0 || particle.x > p.width) particle.vx *= -1;
+                        if (particle.y < 0 || particle.y > p.height) particle.vy *= -1;
+                        
+                        p.fill(229, 62, 62, particle.opacity * 255);
+                        p.noStroke();
+                        p.ellipse(particle.x, particle.y, particle.size);
+                    });
+                };
+                
+                p.windowResized = () => {
+                    p.resizeCanvas(p.windowWidth, 600);
+                };
+            });
+            
+            // Academic particles
+            const academicParticles = new p5((p) => {
+                let particles = [];
+                
+                p.setup = () => {
+                    const canvas = p.createCanvas(p.windowWidth, 600);
+                    canvas.parent('academic-particles');
+                    
+                    for (let i = 0; i < 50; i++) {
+                        particles.push({
+                            x: p.random(p.width),
+                            y: p.random(p.height),
+                            vx: p.random(-0.6, 0.6),
+                            vy: p.random(-0.6, 0.6),
+                            size: p.random(2, 5),
+                            opacity: p.random(0.1, 0.4)
+                        });
+                    }
+                };
+                
+                p.draw = () => {
+                    p.clear();
+                    
+                    particles.forEach(particle => {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        
+                        if (particle.x < 0) particle.x = p.width;
+                        if (particle.x > p.width) particle.x = 0;
+                        if (particle.y < 0) particle.y = p.height;
+                        if (particle.y > p.height) particle.y = 0;
+                        
+                        p.fill(255, 255, 255, particle.opacity * 255);
+                        p.noStroke();
+                        p.ellipse(particle.x, particle.y, particle.size);
+                    });
+                };
+                
+                p.windowResized = () => {
+                    p.resizeCanvas(p.windowWidth, 600);
+                };
+            });
+        }
+        
+        function initializeScrollEffects() {
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.3,
+                rootMargin: '0px 0px -100px 0px'
+            });
+
+            revealElements.forEach(element => {
+                revealObserver.observe(element);
+            });
+        }
+        
+        function initializeCounters() {
+            const counters = document.querySelectorAll('.stats-3d');
+            
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counter = entry.target;
+                        const target = parseInt(counter.dataset.target);
+                        const duration = 2000;
+                        const increment = target / (duration / 16);
+                        let current = 0;
+                        
+                        const updateCounter = () => {
+                            current += increment;
+                            if (current < target) {
+                                counter.textContent = Math.floor(current).toLocaleString();
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                counter.textContent = target.toLocaleString();
+                            }
+                        };
+                        
+                        updateCounter();
+                        counterObserver.unobserve(counter);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            counters.forEach(counter => {
+                counterObserver.observe(counter);
+            });
+        }
+        
+        function initializeNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+        }
+        
+        function initializeTrophyAnimations() {
+            const medals = document.querySelectorAll('.medal-3d');
+            
+            medals.forEach(medal => {
+                medal.addEventListener('mouseenter', function() {
+                    anime({
+                        targets: this,
+                        scale: 1.2,
+                        rotateZ: 15,
+                        duration: 400,
+                        easing: 'easeOutCubic'
+                    });
+                });
+                
+                medal.addEventListener('mouseleave', function() {
+                    anime({
+                        targets: this,
+                        scale: 1,
+                        rotateZ: 0,
+                        duration: 400,
+                        easing: 'easeOutCubic'
+                    });
+                });
+            });
+        }
+        
+        function initializeButtonHandlers() {
+            const buttons = document.querySelectorAll('button');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const text = this.textContent.trim();
+                    
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = event.clientX - rect.left - size / 2;
+                    const y = event.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                    
+                    // Show notification
+                    showNotification('Feature coming soon!');
+                });
+            });
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-6 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            anime({
+                targets: notification,
+                translateX: 0,
+                duration: 300,
+                easing: 'easeOutCubic',
+                complete: () => {
+                    setTimeout(() => {
+                        anime({
+                            targets: notification,
+                            translateX: '100%',
+                            duration: 300,
+                            easing: 'easeInCubic',
+                            complete: () => {
+                                notification.remove();
+                            }
+                        });
+                    }, 3000);
+                }
+            });
+        }
+        
+        // CSS for ripple effect
+        const style = document.createElement('style');
+        style.textContent = `
+            .ripple {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(0);
+                animation: ripple-animation 0.6s linear;
+                pointer-events: none;
+            }
+            
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

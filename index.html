@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVM School - Excellence in Education Since 1965</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #1a365d;
+            --warm-gold: #d69e2e;
+            --pure-white: #ffffff;
+            --soft-gray: #718096;
+            --table-tennis-red: #e53e3e;
+            --achievement-silver: #a0aec0;
+            --campus-green: #38a169;
+            --innovation-blue: #3182ce;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            color: var(--primary-navy);
+            overflow-x: hidden;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--warm-gold), var(--primary-navy));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-3d {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .hero-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('resources/hero-campus.jpg') center/cover;
+            filter: brightness(0.7);
+            z-index: -1;
+        }
+        
+        .nav-3d {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transform: translateZ(0);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--warm-gold);
+            transition: width 0.3s ease;
+            transform: translateZ(-1px);
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            transform: translateZ(10px) scale(1.05);
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px) rotateX(10deg);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-3d {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .card-3d:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .achievement-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s ease;
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .stats-counter {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--warm-gold);
+        }
+        
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .logo-3d {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .logo-3d:hover {
+            transform: rotateY(180deg) scale(1.1);
+        }
+        
+        .btn-3d {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        
+        .btn-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--warm-gold), #b7791f);
+            border-radius: inherit;
+            transform: translateZ(-1px);
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-3d:hover::before {
+            transform: translateZ(-5px);
+        }
+        
+        .btn-3d:hover {
+            transform: translateZ(5px) scale(1.05);
+        }
+        
+        .section-3d {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            50% { transform: translateY(-20px) rotateX(5deg); }
+        }
+        
+        .stagger-delay-1 { transition-delay: 0.1s; }
+        .stagger-delay-2 { transition-delay: 0.2s; }
+        .stagger-delay-3 { transition-delay: 0.3s; }
+        .stagger-delay-4 { transition-delay: 0.4s; }
+        
+        .table-tennis-bg {
+            background: linear-gradient(135deg, var(--table-tennis-red), #c53030);
+        }
+        
+        .gold-shimmer {
+            background: linear-gradient(45deg, var(--warm-gold), #f6e05e, var(--warm-gold));
+            background-size: 200% 200%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% 0; }
+            50% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Navigation -->
+    <nav class="nav-3d">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="logo-3d">
+                    <img src="resources/new-logo-60years.png" alt="AVM School" class="h-12">
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Home</a>
+                    <a href="about.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">About</a>
+                    <a href="achievements.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Achievements</a>
+                    <a href="academics.html" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Academics</a>
+                    <a href="#contact" class="nav-link text-gray-700 hover:text-gray-900 font-medium">Contact</a>
+                </div>
+                <button class="md:hidden btn-3d bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    Menu
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 3D Hero Section -->
+    <section id="home" class="hero-3d flex items-center justify-center relative">
+        <div class="particle-container" id="particle-bg"></div>
+        <div class="text-center text-white z-10 max-w-4xl mx-auto px-6">
+            <div class="reveal">
+                <h1 class="font-display text-6xl lg:text-8xl font-bold mb-6">
+                    <span class="gradient-text">AVM School</span>
+                </h1>
+                <div class="text-2xl lg:text-3xl mb-8">
+                    <span id="typed-text"></span>
+                </div>
+                <p class="text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+                    58 years of excellence in education, where tradition meets innovation and every student achieves their full potential.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <button class="btn-3d bg-yellow-500 text-white px-8 py-4 rounded-lg font-semibold text-lg">
+                        Explore Campus
+                    </button>
+                    <button class="btn-3d bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg">
+                        View Achievements
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3D Stats Counter -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10">
+            <div class="reveal stagger-delay-2 flex space-x-8 bg-white/10 backdrop-blur-md rounded-2xl p-6">
+                <div class="text-center text-white">
+                    <div class="stats-counter" data-target="60">0</div>
+                    <div class="text-sm opacity-80">Years of Excellence</div>
+                </div>
+                <div class="text-center text-white">
+                    <div class="stats-counter" data-target="12000">0</div>
+                    <div class="text-sm opacity-80">Students Educated</div>
+                </div>
+                <div class="text-center text-white">
+                    <div class="stats-counter" data-target="15">0</div>
+                    <div class="text-sm opacity-80">International Medals</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 3D Campus Explorer Section -->
+    <section class="py-20 section-3d">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Explore Our Campus</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Discover our state-of-the-art facilities designed for 21st-century learning and growth.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="reveal stagger-delay-1">
+                    <div class="card-3d bg-white rounded-2xl overflow-hidden shadow-2xl">
+                        <img src="resources/campus-building.jpg" alt="AVM Campus" class="w-full h-64 object-cover">
+                        <div class="p-8">
+                            <h3 class="font-display text-3xl font-bold mb-4">Modern Infrastructure</h3>
+                            <p class="text-gray-600 mb-6 leading-relaxed">
+                                Our campus features modern classrooms, advanced laboratories, and world-class sports facilities that provide the perfect environment for holistic development.
+                            </p>
+                            <div class="flex flex-wrap gap-3 mb-6">
+                                <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm">Smart Classrooms</span>
+                                <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm">Science Labs</span>
+                                <span class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm">Sports Complex</span>
+                                <span class="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm">Library</span>
+                            </div>
+                            <button class="btn-3d bg-blue-600 text-white px-6 py-3 rounded-lg font-medium">
+                                Take Virtual Tour
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal stagger-delay-2">
+                    <div class="space-y-6">
+                        <div class="card-3d bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-blue-600 text-white p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold text-xl">Smart Classrooms</h3>
+                            </div>
+                            <p class="text-gray-600">Interactive whiteboards, projectors, and digital learning tools in every classroom.</p>
+                        </div>
+                        
+                        <div class="card-3d bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-600 text-white p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold text-xl">Science Laboratories</h3>
+                            </div>
+                            <p class="text-gray-600">Modern labs for physics, chemistry, biology, and computer science.</p>
+                        </div>
+                        
+                        <div class="card-3d bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-yellow-600 text-white p-3 rounded-lg mr-4">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="font-semibold text-xl">Sports Complex</h3>
+                            </div>
+                            <p class="text-gray-600">Table tennis arena, basketball court, and athletics facilities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Table Tennis Achievements Section -->
+    <section class="py-20 table-tennis-bg text-white relative overflow-hidden">
+        <div class="particle-container" id="achievement-particles"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gold-shimmer bg-clip-text text-transparent">Table Tennis Excellence</span>
+                </h2>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                    Our students have brought international recognition to Nepal through exceptional table tennis performances.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="reveal stagger-delay-1 achievement-card rounded-2xl p-8 text-center">
+                    <img src="resources/ivana-portrait.jpg" alt="Ivana" class="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-yellow-400">
+                    <h3 class="font-display text-2xl font-bold mb-4">Ivana's Journey</h3>
+                    <p class="text-gray-700 mb-6">
+                        From AVM School to international championships, Ivana has become Nepal's table tennis sensation.
+                    </p>
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Asian Championships</span>
+                            <span class="font-semibold">2 Participations</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">South Asian Medals</span>
+                            <span class="font-semibold">2 Silver</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">National Team</span>
+                            <span class="font-semibold">Since Age 13</span>
+                        </div>
+                    </div>
+                    <button class="btn-3d bg-red-600 text-white px-6 py-3 rounded-lg font-medium">
+                        View Full Story
+                    </button>
+                </div>
+                
+                <div class="reveal stagger-delay-2 achievement-card rounded-2xl p-8 text-center">
+                    <img src="resources/achievement-trophy.jpg" alt="Trophy" class="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-yellow-400 object-cover">
+                    <h3 class="font-display text-2xl font-bold mb-4">International Success</h3>
+                    <p class="text-gray-700 mb-6">
+                        AVM School has consistently produced champions who compete at the highest international levels.
+                    </p>
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Olympic Qualifiers</span>
+                            <span class="font-semibold">Multiple</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">World Cup Regional</span>
+                            <span class="font-semibold">Qualified</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Asian Youth</span>
+                            <span class="font-semibold">Regular</span>
+                        </div>
+                    </div>
+                    <button class="btn-3d bg-blue-600 text-white px-6 py-3 rounded-lg font-medium">
+                        Championship Gallery
+                    </button>
+                </div>
+                
+                <div class="reveal stagger-delay-3 achievement-card rounded-2xl p-8 text-center">
+                    <div class="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-yellow-400 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <svg class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Team Excellence</h3>
+                    <p class="text-gray-700 mb-6">
+                        Our table tennis team continues to dominate national competitions and represent Nepal internationally.
+                    </p>
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">National Champions</span>
+                            <span class="font-semibold">Multiple</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">South Asian Medals</span>
+                            <span class="font-semibold">First Ever</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">International Rankings</span>
+                            <span class="font-semibold">Top 100</span>
+                        </div>
+                    </div>
+                    <button class="btn-3d bg-green-600 text-white px-6 py-3 rounded-lg font-medium">
+                        Meet the Team
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Academic Excellence Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">
+                    <span class="gradient-text">Academic Excellence</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Beyond sports, we excel in academics with comprehensive programs designed for holistic development.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="reveal stagger-delay-1 card-3d bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-2xl text-center">
+                    <div class="bg-blue-600 text-white p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Science Programs</h3>
+                    <p class="text-gray-600">Advanced laboratories and comprehensive science education from primary to high school.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-2 card-3d bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-2xl text-center">
+                    <div class="bg-green-600 text-white p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Mathematics</h3>
+                    <p class="text-gray-600">Strong mathematical foundation with modern teaching methods and problem-solving approaches.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-3 card-3d bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-2xl text-center">
+                    <div class="bg-purple-600 text-white p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Languages</h3>
+                    <p class="text-gray-600">Comprehensive language programs including English, Nepali, and optional foreign languages.</p>
+                </div>
+                
+                <div class="reveal stagger-delay-4 card-3d bg-gradient-to-br from-yellow-50 to-yellow-100 p-8 rounded-2xl text-center">
+                    <div class="bg-yellow-600 text-white p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Arts & Culture</h3>
+                    <p class="text-gray-600">Creative expression through music, dance, drama, and visual arts programs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section id="contact" class="py-20 bg-gradient-to-br from-blue-600 to-purple-700 text-white relative overflow-hidden">
+        <div class="particle-container" id="cta-particles"></div>
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <div class="reveal">
+                <h2 class="font-display text-5xl font-bold mb-6">Join AVM School</h2>
+                <p class="text-xl mb-12 opacity-90">
+                    Be part of a legacy of excellence. Admissions are now open for the academic year 2025-26.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <button class="btn-3d bg-yellow-500 text-black px-8 py-4 rounded-lg font-semibold text-lg">
+                        Apply Now
+                    </button>
+                    <button class="btn-3d bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg">
+                        Schedule Visit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-12 bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <div class="reveal">
+                <div class="mb-6">
+                    <img src="resources/new-logo-60years.png" alt="AVM School" class="h-16 mx-auto mb-4">
+                </div>
+                <p class="text-gray-400 mb-4">
+                    Adarsha Vidya Mandir (AVM) School<br>
+                    Manbhawan, Lalitpur, Nepal
+                </p>
+                <p class="text-gray-500 text-sm font-mono">
+                    © 2025 AVM School. 60 Years of Excellence in Education.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="main.js"></script>
+</body>
+</html>
